@@ -103,7 +103,12 @@ window.applyRoistatEmailSubstitution = function(visitId) {
 	if (!visitId)
 		return;
 
-	var mail = visitId + '@' + window.location.hostname;
+	var host = window.location.hostname;
+	if (host === '127.0.0.1' || host === 'localhost') {
+		host = 'gnkmed.ru';
+	}
+
+	var mail = visitId + '@' + host;
 	$('.roi_visit').each(function() {
 		$(this).text(mail).attr('href', 'mailto:' + mail);
 	});
