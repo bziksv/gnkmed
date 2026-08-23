@@ -51,6 +51,26 @@ if ($arParams["SET_TITLE"] == "Y")
 
 						if (empty($arPaySystem["ERROR"]))
 						{
+							$paySystemLogoHtml = '';
+							if (!empty($arPaySystem['LOGOTIP']))
+							{
+								$logoPath = CFile::GetPath($arPaySystem['LOGOTIP']);
+								if ($logoPath && is_file($_SERVER['DOCUMENT_ROOT'] . $logoPath))
+								{
+									$paySystemLogoHtml = CFile::ShowImage(
+										$arPaySystem['LOGOTIP'],
+										100,
+										100,
+										'border="0" style="width:100px"',
+										'',
+										false
+									);
+								}
+							}
+							if ($paySystemLogoHtml === '')
+							{
+								$paySystemLogoHtml = '<img src="' . htmlspecialcharsbx($templateFolder . '/images/pay_system_logo.svg') . '" width="100" height="100" alt="" style="width:100px">';
+							}
 							?>
 							<br /><br />
 
@@ -58,7 +78,7 @@ if ($arParams["SET_TITLE"] == "Y")
 								<tr>
 									<td class="ps_logo">
 										<div class="pay_name"><?=Loc::getMessage("SOA_PAY") ?></div>
-										<?=CFile::ShowImage($arPaySystem["LOGOTIP"], 100, 100, "border=0\" style=\"width:100px\"", "", false) ?>
+										<?=$paySystemLogoHtml?>
 										<div class="paysystem_name"><?=$arPaySystem["NAME"] ?></div>
 										<br/>
 									</td>
