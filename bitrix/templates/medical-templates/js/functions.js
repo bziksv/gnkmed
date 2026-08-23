@@ -94,10 +94,25 @@ $( function() {
     });
 } );
 
+window.getRoistatVisitId = function() {
+	if (window.roistat && window.roistat.visit) {
+		return String(window.roistat.visit);
+	}
+
+	if (typeof window.roistatGetCookie === 'function') {
+		var cookieVisit = window.roistatGetCookie('roistat_visit');
+		if (cookieVisit) {
+			return cookieVisit;
+		}
+	}
+
+	var match = document.cookie.match(/(?:^|;\s*)roistat_visit=([^;]*)/);
+	return match ? decodeURIComponent(match[1]) : '';
+};
+
 window.applyRoistatEmailSubstitution = function(visitId) {
 	if (!visitId) {
-		var match = document.cookie.match(/(?:^|;\s*)roistat_visit=([^;]*)/);
-		visitId = match ? decodeURIComponent(match[1]) : '';
+		visitId = window.getRoistatVisitId();
 	}
 
 	if (!visitId)
@@ -123,7 +138,9 @@ window.onRoistatModuleLoaded = function() {
 };
 
 $(function() {
-	setTimeout(function() {
-		window.applyRoistatEmailSubstitution();
-	}, 1500);
+	[500, 1500, 3000].forEach(function(delay) {
+		setTimeout(function() {
+			window.applyRoistatEmailSubstitution();
+		}, delay);
+	});
 });

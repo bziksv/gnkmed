@@ -115,7 +115,7 @@ $this->setFrameMode(true);
 	</div>
 <div class="cart__bulk-order">
 	<p class="cart__bulk-order__title">Закупаете большой список позиций?</p>
-	<p class="cart__bulk-order__text">Не тратьте время, пришлите нам заявку на E-mail: <a href="mailto:<?=tplvar('email');?>" class="roi_visit"><?=tplvar('email', true);?></a></p>
+	<p class="cart__bulk-order__text">Не тратьте время, пришлите нам заявку на E-mail: <a href="mailto:<?=tplvar('email');?>" class="roi_visit"><?=tplvar('email');?></a></p>
 </div>
 	<div class="tabs">
 		<?if($arResult['DETAIL_TEXT']):?>

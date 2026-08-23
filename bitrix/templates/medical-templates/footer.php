@@ -75,7 +75,7 @@
                 </div>
                 <a href="javascript:void(0);" class="footer__callback footer__link callback-btn" data-text="Заказать звонок"></a>
                 <div class="footer__email icon-email">
-                    <a href="mailto:<?=tplvar('email');?>" class="footer__link roi_visit"><?=tplvar('email', true);?></a>
+                    <a href="mailto:<?=tplvar('email');?>" class="footer__link roi_visit"><?=tplvar('email');?></a>
                     (Для заказов)
                 </div>
             </div>
