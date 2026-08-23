@@ -57,7 +57,7 @@ $APPLICATION->SetTitle("Страница не найдена");?>
 			<p>Если Вы не смогли найти товар, то Вы можете оставить контактные данные и наш менеджер с вами свяжется.</p>
 
 			<?$APPLICATION->IncludeComponent("nbrains:main.feedback", "feedback", Array(
-				"EMAIL_TO" => "info@kawe.su",	// E-mail, на который будет отправлено письмо
+				"EMAIL_TO" => tplvar('email'),	// E-mail, на который будет отправлено письмо
 				"EVENT_MESSAGE_ID" => array(	// Почтовые шаблоны для отправки письма
 					0 => "52",
 				),

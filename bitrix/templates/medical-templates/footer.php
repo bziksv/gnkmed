@@ -111,7 +111,7 @@ $APPLICATION->IncludeFile('/include/location_popup.php', [], [
 	"nbrains:main.feedback", 
 	"popup-callback", 
 	array(
-		"EMAIL_TO" => "info@kawe.su",
+		"EMAIL_TO" => tplvar('email'),
 		"EVENT_MESSAGE_ID" => array(
 			0 => "53",
 		),
