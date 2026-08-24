@@ -13,7 +13,9 @@ if(!defined("B_PROLOG_INCLUDED")||B_PROLOG_INCLUDED!==true)die();
 
 
 
-$arResult["PARAMS_HASH"] = md5(serialize($arParams).$this->GetTemplateName());
+$hashParams = $arParams;
+unset($hashParams['ROI_VISIT']);
+$arResult["PARAMS_HASH"] = md5(serialize($hashParams).$this->GetTemplateName());
 $arParams["USE_CAPTCHA"] = "N";
 
 $arParams["EVENT_NAME"] = trim($arParams["EVENT_NAME"]);
@@ -36,11 +38,15 @@ foreach($arParams['PROPERTY_CODE'] as $code){
 	{ $arPropertyField[] = $arr; }
 }
 
-if($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["submit"] <> '' && (!isset($_POST["PARAMS_HASH"]) || $arResult["PARAMS_HASH"] === $_POST["PARAMS_HASH"]))
+if($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["submit"] <> '')
 {
-	$arResult["ERROR_MESSAGE"] = array();
-	if(check_bitrix_sessid())
+	if (!isset($_POST["PARAMS_HASH"]) || $arResult["PARAMS_HASH"] !== $_POST["PARAMS_HASH"])
 	{
+		$arResult["ERROR_MESSAGE"] = array("Ошибка отправки формы. Обновите страницу и попробуйте снова.");
+	}
+	elseif(check_bitrix_sessid())
+	{
+		$arResult["ERROR_MESSAGE"] = array();
 
 		foreach($arPropertyField as $field){
 			if($field['IS_REQUIRED'] == "Y"){
@@ -98,8 +104,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["submit"] <> '' && (!isset($_P
 		if(empty($arResult["ERROR_MESSAGE"]))
 		{
 			$arFields = Array();
-			if(isset($arParams['ROI_VISIT']) && $arParams['ROI_VISIT'])
-			    $arFields['ROI_VISIT'] = $arParams['ROI_VISIT'];
+			if(!empty($_COOKIE['roistat_visit']))
+			    $arFields['ROI_VISIT'] = $_COOKIE['roistat_visit'];
 
 			foreach($arPropertyField as $field){
 				if($field['CODE'] == "PRODUCT_CART"){

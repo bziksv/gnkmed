@@ -143,4 +143,79 @@ $(function() {
 			window.applyRoistatEmailSubstitution();
 		}, delay);
 	});
+
+	window.ensureBitrixSessid = function($form) {
+		var $sessid = $form.find('input[name="sessid"]');
+		if (!$sessid.length || !$sessid.val()) {
+			if (typeof BX !== 'undefined' && BX.bitrix_sessid) {
+				if (!$sessid.length) {
+					$form.append('<input type="hidden" name="sessid" value="">');
+					$sessid = $form.find('input[name="sessid"]');
+				}
+				$sessid.val(BX.bitrix_sessid());
+			}
+		}
+	};
+
+	window.validateCallbackConsent = function() {
+		var $checkbox = $('#callback-consent');
+		var $error = $('#callback .mf-consent-error');
+
+		if (!$checkbox.length) {
+			return true;
+		}
+
+		if (!$checkbox.is(':checked')) {
+			$error.show();
+			return false;
+		}
+
+		$error.hide();
+		return true;
+	};
+
+	window.handleCallbackFormResult = function() {
+		var $callback = $('#callback');
+		if (!$callback.length) {
+			return;
+		}
+
+		var paramsHash = String($callback.data('params-hash') || '');
+		var urlParams = new URLSearchParams(window.location.search);
+		var success = urlParams.get('success');
+
+		if (success && paramsHash && success === paramsHash) {
+			alertify.success('Спасибо, ваше сообщение принято.');
+			$callback.bPopup({ zIndex: 1000 });
+		} else if ($callback.find('.errortext').length) {
+			var errorText = $.trim($callback.find('.errortext').first().text());
+			alertify.error(errorText || 'Ошибка отправки формы');
+			$callback.bPopup({ zIndex: 1000 });
+		} else {
+			return;
+		}
+
+		if (success) {
+			urlParams.delete('success');
+			var query = urlParams.toString();
+			var newUrl = window.location.pathname + (query ? '?' + query : '') + window.location.hash;
+			history.replaceState({}, '', newUrl);
+		}
+	};
+
+	$(document).on('change', '#callback-consent', function() {
+		$('#callback .mf-consent-error').hide();
+	});
+
+	$(document).on('submit', '#callback form', function(e) {
+		var $form = $(this);
+		window.ensureBitrixSessid($form);
+
+		if (!window.validateCallbackConsent()) {
+			e.preventDefault();
+			return false;
+		}
+	});
+
+	window.handleCallbackFormResult();
 });

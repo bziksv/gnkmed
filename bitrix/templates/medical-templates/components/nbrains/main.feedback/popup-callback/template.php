@@ -11,7 +11,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/include/legal/hel
  * @global CUser $USER
  */
 ?>
-<div class="mfeedback-p" id="callback">
+<div class="mfeedback-p" id="callback" data-params-hash="<?=htmlspecialcharsbx($arResult['PARAMS_HASH'])?>">
 
 	<span class="button b-close"><span>&times;</span></span>
 
@@ -66,9 +66,12 @@ if(strlen($arResult["OK_MESSAGE"]) > 0):?>
 
 <div>
 	<label style="color: #66797f;">
-  <input type="checkbox" required>
+  <input type="checkbox" id="callback-consent" name="callback-consent">
 				<span>Нажимая на эту кнопку, я даю свое <a target="_blank" href="<?=htmlspecialcharsbx(gnkmedLegalUrl('consent'))?>">согласие на обработку персональных данных</a> и соглашаюсь с условиями <a target="_blank" href="<?=htmlspecialcharsbx(gnkmedLegalUrl('policy'))?>">политики обработки персональных данных</a>.</span>
 </label>
+	<div class="mf-consent-error" style="display:none;color:#a94442;margin-top:8px;">
+		Необходимо дать согласие на обработку персональных данных
+	</div>
 </div>
 
 
@@ -86,14 +89,3 @@ if(strlen($arResult["OK_MESSAGE"]) > 0):?>
 
 </div>
 
-
-<?if(!empty($arResult["ERROR_MESSAGE"]) OR strlen($arResult["OK_MESSAGE"]) > 0):?>
-	<script>
-		$(function(){
-			$('#callback').bPopup({
-				zIndex:1000
-			});
-		});
-
-	</script>
-<?endif;?>

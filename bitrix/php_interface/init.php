@@ -4,6 +4,19 @@ define("IBLOCK_CATALOG","33");
 
 AddEventHandler("main", "OnPageStart", "gnkmedDisableCaptcha");
 AddEventHandler("main", "OnBeforeUserLogin", "gnkmedDisableLoginCaptcha");
+AddEventHandler("main", "OnPageStart", "gnkmedDisableCompositeForForms");
+
+function gnkmedDisableCompositeForForms()
+{
+	if ((!empty($_REQUEST['success']) && is_string($_REQUEST['success']))
+		|| (!empty($_POST['submit']) && $_SERVER['REQUEST_METHOD'] === 'POST'))
+	{
+		if (!defined('BX_COMPOSITE_DISABLED'))
+		{
+			define('BX_COMPOSITE_DISABLED', true);
+		}
+	}
+}
 
 function gnkmedDisableCaptcha()
 {

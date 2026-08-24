@@ -115,7 +115,6 @@ $APPLICATION->IncludeFile('/include/location_popup.php', [], [
 		"EVENT_MESSAGE_ID" => array(
 			0 => "53",
 		),
-		"ROI_VISIT" => $_COOKIE['roistat_visit'],
 		"IBLOCK_ID" => "37",
 		"IBLOCK_TYPE" => "feedback",
 		"OK_TEXT" => "Спасибо, ваше сообщение принято.",
@@ -128,7 +127,7 @@ $APPLICATION->IncludeFile('/include/location_popup.php', [], [
 		),
 		"USE_CAPTCHA" => "N",
 		"COMPONENT_TEMPLATE" => "popup-callback",
-		"COMPOSITE_FRAME_MODE" => "A",
+		"COMPOSITE_FRAME_MODE" => "N",
 		"COMPOSITE_FRAME_TYPE" => "AUTO"
 	),
 	false

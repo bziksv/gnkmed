@@ -1706,21 +1706,20 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 		 */
 		clickOrderSaveAction: function(event)
 		{
-			if (!this.isValidConsentCheckbox())
+			this.disallowOrderSave();
+			this.endLoader();
+
+			if (!this.isCustomConsentChecked())
+			{
+				this.showCustomConsentError();
 				return BX.PreventDefault(event);
+			}
+			this.hideCustomConsentError();
 
 			if (this.isValidForm())
 			{
 				this.allowOrderSave();
-
-				if (this.params.USER_CONSENT === 'Y' && BX.UserConsent)
-				{
-					BX.onCustomEvent('bx-soa-order-save', []);
-				}
-				else
-				{
-					this.doSaveAction();
-				}
+				this.doSaveAction();
 			}
 
 			return BX.PreventDefault(event);
@@ -7124,24 +7123,47 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 
 		isValidConsentCheckbox: function()
 		{
-			var checkbox = this.orderSaveBlockNode
-				? this.orderSaveBlockNode.querySelector('input[type=checkbox][required]')
+			return this.isCustomConsentChecked();
+		},
+
+		getCustomConsentCheckbox: function()
+		{
+			return this.orderSaveBlockNode
+				? this.orderSaveBlockNode.querySelector('#bx-soa-custom-consent')
 				: null;
+		},
+
+		isCustomConsentChecked: function()
+		{
+			var checkbox = this.getCustomConsentCheckbox();
 
 			if (!checkbox)
 				return true;
 
-			if (!checkbox.checked)
-			{
-				if (typeof checkbox.reportValidity === 'function')
-					checkbox.reportValidity();
-				else
-					checkbox.focus();
+			return checkbox.checked;
+		},
 
-				return false;
-			}
+		showCustomConsentError: function()
+		{
+			var errorNode = this.orderSaveBlockNode
+				? this.orderSaveBlockNode.querySelector('.bx-soa-consent-error')
+				: null;
 
-			return true;
+			if (errorNode)
+				errorNode.style.display = 'block';
+
+			if (this.orderSaveBlockNode)
+				this.orderSaveBlockNode.scrollIntoView({behavior: 'smooth', block: 'center'});
+		},
+
+		hideCustomConsentError: function()
+		{
+			var errorNode = this.orderSaveBlockNode
+				? this.orderSaveBlockNode.querySelector('.bx-soa-consent-error')
+				: null;
+
+			if (errorNode)
+				errorNode.style.display = 'none';
 		},
 
 		isValidForm: function()
