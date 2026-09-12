@@ -130,6 +130,7 @@ $this->setFrameMode(true);
 				$detailHtml
 			);
 			$detailHtml = preg_replace('#<p>\s*</p>#i', '', $detailHtml);
+			$detailHtml = gnkmedNormalizeDetailHeadings($detailHtml);
 			echo $detailHtml;
 			?>
 		</div>

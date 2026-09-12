@@ -119,6 +119,68 @@ function priceDiscount($id){
 	return $ar_res_price;
 }
 
+/**
+ * Remap DETAIL_TEXT headings to a contiguous H2… sequence (page already has H1).
+ * Fixes skips like H1→H3 or H2→H4 without editing CMS HTML.
+ */
+function gnkmedNormalizeDetailHeadings($html)
+{
+	$html = (string)$html;
+	if ($html === '' || !preg_match_all('/<h([1-6])\b/i', $html, $opens))
+	{
+		return $html;
+	}
+
+	$used = array_values(array_unique(array_map('intval', $opens[1])));
+	sort($used, SORT_NUMERIC);
+
+	$map = [];
+	$target = 2;
+	foreach ($used as $level)
+	{
+		$map[$level] = min($target, 6);
+		$target++;
+	}
+
+	$needsRewrite = false;
+	foreach ($map as $from => $to)
+	{
+		if ($from !== $to)
+		{
+			$needsRewrite = true;
+			break;
+		}
+	}
+	if (!$needsRewrite)
+	{
+		return $html;
+	}
+
+	// Placeholder pass avoids colliding replacements (h4→h3 then h3→h2).
+	$tokens = [];
+	foreach ($map as $from => $to)
+	{
+		if ($from === $to)
+		{
+			continue;
+		}
+		$token = "\x00GNKMEDH{$from}\x00";
+		$tokens[$token] = $to;
+		$html = preg_replace('/<h' . $from . '\b/i', '<' . $token, $html);
+		$html = preg_replace('/<\/h' . $from . '\s*>/i', '</' . $token . '>', $html);
+	}
+	foreach ($tokens as $token => $to)
+	{
+		$html = str_replace(
+			['<' . $token, '</' . $token . '>'],
+			['<h' . $to, '</h' . $to . '>'],
+			$html
+		);
+	}
+
+	return $html;
+}
+
 function EditData ($DATA){
     $MES = array(
         "01" => "Января",
