@@ -37,7 +37,7 @@ if (empty($arResult['ITEMS'])) {
                 <span data-text="за штуку"><?=($item['JS_HIDE'] === 'N') ? 'за штуку' : '' ?></span>
                 <div class="goods__counter">
                     <div class="goods__counter_subtract">-</div>
-                    <input type="text" class="goods__counter_input" id="goods__counter_input_<?=(int)$item['ID']?>" value="1" readonly>
+                    <input type="text" class="goods__counter_input" id="goods__counter_input_rec_<?=(int)$item['ID']?>" value="1" readonly>
                     <div class="goods__counter_add">+</div>
                 </div>
                 <?php if (count($articlsValues) > 1): ?>
@@ -46,7 +46,7 @@ if (empty($arResult['ITEMS'])) {
                     <?php if (count($articlsValues) === 1): ?>
                     <input type="hidden" name="article" value="<?=htmlspecialcharsbx($articlsValues[0])?>">
                     <?php endif; ?>
-                    <a href="javascript:void(0)" class="goods__buy" onclick="addToBasket2(<?=(int)$item['ID']?>, $('#goods__counter_input_<?=(int)$item['ID']?>').val(),this);" data-text="Купить"><?=($item['JS_HIDE'] === 'N') ? 'Купить' : '' ?></a>
+                    <a href="javascript:void(0)" class="goods__buy" onclick="addToBasket2(<?=(int)$item['ID']?>, $('#goods__counter_input_rec_<?=(int)$item['ID']?>').val(),this);" data-text="Купить"><?=($item['JS_HIDE'] === 'N') ? 'Купить' : '' ?></a>
                 <?php endif; ?>
             </div>
         </div>
