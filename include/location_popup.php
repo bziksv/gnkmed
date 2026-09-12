@@ -77,7 +77,7 @@ if (!$arCityes = include $_SERVER['DOCUMENT_ROOT'] . '/.cityes.php') {
         $('.city .item-city a.c').on('click', function () {
             var city = $(this).text();
             document.cookie = 'city=' + encodeURIComponent(city) + '; path=/;';
-            $('#location_btn').html(city + '<i class="icon-arrow_down" style="transform: none;"></i>');
+            $('#location_btn').html(city + '<i class="icon-arrow_down" style="transform: none;"><' + '/i>');
             $('#location').bPopup().close();
         });
     });

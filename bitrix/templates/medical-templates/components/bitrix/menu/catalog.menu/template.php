@@ -1,6 +1,12 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
 
 <?if (!empty($arResult)):?>
+<?php
+$ufDeleteIndex = [];
+if (isset($arResult['PROPERTIES']['UF_DELETE_INDEX']) && is_array($arResult['PROPERTIES']['UF_DELETE_INDEX'])) {
+	$ufDeleteIndex = $arResult['PROPERTIES']['UF_DELETE_INDEX'];
+}
+?>
 
 <div class="catalog">
 	<div class="catalog__head">Каталог товаров</div>
@@ -9,6 +15,13 @@
 $previousLevel = 0;
 
 foreach($arResult as $key => $arItem):
+	// Skip non-item keys (e.g. PROPERTIES from result_modifier) — they break </ul></li> closing math
+	if (!is_int($key) && !ctype_digit((string)$key)) {
+		continue;
+	}
+	if (!is_array($arItem) || !isset($arItem['DEPTH_LEVEL'])) {
+		continue;
+	}
 ?>
 	<?if ($previousLevel && $arItem["DEPTH_LEVEL"] < $previousLevel):?>
 		<?=str_repeat("</ul></li>", ($previousLevel - $arItem["DEPTH_LEVEL"]));?>
@@ -17,7 +30,7 @@ foreach($arResult as $key => $arItem):
 	<?if ($arItem["IS_PARENT"]):?>
 			<li<?if($arItem["CHILD_SELECTED"] !== true):?> <?endif?> class="catalog__item">
 
-                <? if(in_array($arItem["PARAMS"]["ID"], $arResult['PROPERTIES']['UF_DELETE_INDEX'])): ?>
+                <? if(in_array($arItem["PARAMS"]["ID"], $ufDeleteIndex, true)): ?>
                     <a href="<?=$arItem["LINK"]?>" class="catalog__link" data-text="<?=$arItem["TEXT"]?>"></a>
                 <? else: ?>
                     <a href="<?=$arItem["LINK"]?>" class="catalog__link"><?=$arItem["TEXT"]?></a>
@@ -29,7 +42,7 @@ foreach($arResult as $key => $arItem):
 
 		<?if ($arItem["PERMISSION"] > "D"):?>
 				<li <?if($arItem["DEPTH_LEVEL"] == 1):?>class="catalog__item"<?endif;?>>
-                    <? if(in_array($arItem["PARAMS"]["ID"], $arResult['PROPERTIES']['UF_DELETE_INDEX'])): ?>
+                    <? if(in_array($arItem["PARAMS"]["ID"], $ufDeleteIndex, true)): ?>
                         <a href="<?=$arItem["LINK"]?>" class="<?if($arItem["DEPTH_LEVEL"] > 1):?>catalog__submenu_link<?else:?>catalog__link<?endif;?>" data-text="<?=$arItem["TEXT"]?>"></a>
                     <? else: ?>
                         <a href="<?=$arItem["LINK"]?>" class="<?if($arItem["DEPTH_LEVEL"] > 1):?>catalog__submenu_link<?else:?>catalog__link<?endif;?>"><?=$arItem["TEXT"]?></a>
