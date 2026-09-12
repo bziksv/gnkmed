@@ -69,7 +69,7 @@ if (!function_exists('gnkmedRecommendedBuildItemPicture')) {
     }
 </style>
 
-<?php foreach ($arParams['SECTION']['UF_RECOMMENDED_LIST'] as $p):
+<?php foreach ($arParams['SECTION']['UF_RECOMMENDED_LIST'] as $recIndex => $p):
 	$arSlider = explode('@', $p, 3);
 	$title = $arSlider[0];
 	$jProduct = json_decode($arSlider[1], true);
@@ -114,13 +114,18 @@ if (!function_exists('gnkmedRecommendedBuildItemPicture')) {
 	if (empty($arResult['ITEMS'])) {
 		continue;
 	}
+
+	$blockUid = 'rec' . (is_int($recIndex) ? $recIndex : preg_replace('/\W+/', '', (string)$recIndex));
 	?>
 <div class="title"><?=htmlspecialcharsbx($title);?></div>
 
 	<?php
 	$APPLICATION->IncludeFile(
 		SITE_TEMPLATE_PATH.'/include/recommended_view/'.$viewTemplate.'.php',
-		['DATA' => $arResult],
+		[
+			'DATA' => $arResult,
+			'BLOCK_UID' => $blockUid,
+		],
 		[
 			'MODE' => 'php',
 			'NAME' => '',

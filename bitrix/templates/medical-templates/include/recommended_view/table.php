@@ -4,12 +4,14 @@ $arResult = $arParams['DATA'] ?? [];
 if (empty($arResult['ITEMS'])) {
 	return;
 }
+$counterPrefix = 'goods__counter_input_' . preg_replace('/\W+/', '', (string)($arParams['BLOCK_UID'] ?? 'rec')) . '_';
 ?>
 <div class="goods__list">
     <?php foreach ($arResult['ITEMS'] as $item):
 		$price = priceDiscount($item['ID']);
 		$articlsValues = gnkmedRecommendedArticlsValues($item);
 		$previewSrc = gnkmedRecommendedPreviewSrc($item);
+		$counterId = $counterPrefix . (int)$item['ID'];
 		?>
         <div class="goods__item">
             <div class="goods__item_wrapper">
@@ -47,7 +49,7 @@ if (empty($arResult['ITEMS'])) {
 
                         <div class="goods__counter">
                             <div class="goods__counter_subtract">-</div>
-                            <input type="text" class="goods__counter_input" id="goods__counter_input_rec_<?=(int)$item['ID']?>" value="1" readonly>
+                            <input type="text" class="goods__counter_input" id="<?=htmlspecialcharsbx($counterId)?>" value="1" readonly>
                             <div class="goods__counter_add">+</div>
                         </div>
                         <span data-text="за штуку"><?=($item['JS_HIDE'] === 'N') ? 'за штуку' : '' ?></span>
@@ -58,7 +60,7 @@ if (empty($arResult['ITEMS'])) {
                         <?php if (count($articlsValues) === 1): ?>
                         <input type="hidden" name="article" value="<?=htmlspecialcharsbx($articlsValues[0])?>">
                         <?php endif; ?>
-                        <a href="javascript:void(0)" class="goods__buy_thumbs" onclick="addToBasket2(<?=(int)$item['ID']?>, $('#goods__counter_input_rec_<?=(int)$item['ID']?>').val(),this);" data-text="Купить"><?=($item['JS_HIDE'] === 'N') ? 'Купить' : '' ?></a>
+                        <a href="javascript:void(0)" class="goods__buy_thumbs" onclick="addToBasket2(<?=(int)$item['ID']?>, $('#<?=htmlspecialcharsbx($counterId)?>').val(),this);" data-text="Купить"><?=($item['JS_HIDE'] === 'N') ? 'Купить' : '' ?></a>
                     <?php endif; ?>
                 </div>
             </div>

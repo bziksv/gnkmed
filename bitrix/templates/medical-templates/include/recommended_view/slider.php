@@ -4,6 +4,7 @@ $arResult = $arParams['DATA'] ?? [];
 if (empty($arResult['ITEMS'])) {
 	return;
 }
+$counterPrefix = 'goods__counter_input_' . preg_replace('/\W+/', '', (string)($arParams['BLOCK_UID'] ?? 'rec')) . '_';
 ?>
 <div class="goods">
     <ul class="goods__slider">
@@ -11,6 +12,7 @@ if (empty($arResult['ITEMS'])) {
 			$price = priceDiscount($arItem['ID']);
 			$articlsValues = gnkmedRecommendedArticlsValues($arItem);
 			$previewSrc = gnkmedRecommendedPreviewSrc($arItem);
+			$counterId = $counterPrefix . (int)$arItem['ID'];
 			?>
             <li class="goods__item">
                 <div class="goods__item_wrapper">
@@ -35,7 +37,7 @@ if (empty($arResult['ITEMS'])) {
 
                             <div class="goods__counter">
                                 <div class="goods__counter_subtract">-</div>
-                                <input type="text" class="goods__counter_input" id="goods__counter_input_rec_<?=(int)$arItem['ID']?>" value="1" readonly>
+                                <input type="text" class="goods__counter_input" id="<?=htmlspecialcharsbx($counterId)?>" value="1" readonly>
                                 <div class="goods__counter_add">+</div>
                             </div>
                             <span data-text="за штуку"><?=($arItem['JS_HIDE'] === 'N') ? 'за штуку' : '' ?></span>
@@ -46,7 +48,7 @@ if (empty($arResult['ITEMS'])) {
                             <?php if (count($articlsValues) === 1): ?>
                             <input type="hidden" name="article" value="<?=htmlspecialcharsbx($articlsValues[0])?>">
                             <?php endif; ?>
-                            <a href="javascript:void(0)" class="goods__basket icon-basket" onclick="addToBasket2(<?=(int)$arItem['ID']?>, $('#goods__counter_input_rec_<?=(int)$arItem['ID']?>').val(),this);"></a>
+                            <a href="javascript:void(0)" class="goods__basket icon-basket" onclick="addToBasket2(<?=(int)$arItem['ID']?>, $('#<?=htmlspecialcharsbx($counterId)?>').val(),this);"></a>
                         <?php endif; ?>
                     </div>
                 </div>
