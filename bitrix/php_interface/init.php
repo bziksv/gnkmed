@@ -120,65 +120,66 @@ function priceDiscount($id){
 }
 
 /**
- * Remap DETAIL_TEXT headings to a contiguous H2… sequence (page already has H1).
- * Fixes skips like H1→H3 or H2→H4 without editing CMS HTML.
+ * Fix DETAIL_TEXT heading outline after page H1: no level skips in document order.
+ * Sibling headings with the same original level stay siblings (H2→H4×N → H2→H3×N).
  */
 function gnkmedNormalizeDetailHeadings($html)
 {
 	$html = (string)$html;
-	if ($html === '' || !preg_match_all('/<h([1-6])\b/i', $html, $opens))
+	if ($html === '' || !preg_match('/<h[1-6]\b/i', $html))
 	{
 		return $html;
 	}
 
-	$used = array_values(array_unique(array_map('intval', $opens[1])));
-	sort($used, SORT_NUMERIC);
+	$stack = [['orig' => 0, 'out' => 1]]; // implied page H1
+	$closeLevels = [];
 
-	$map = [];
-	$target = 2;
-	foreach ($used as $level)
-	{
-		$map[$level] = min($target, 6);
-		$target++;
-	}
+	return (string)preg_replace_callback(
+		'/<\/?h([1-6])(\s[^>]*)?>/i',
+		static function ($m) use (&$stack, &$closeLevels) {
+			$level = (int)$m[1];
+			$isClose = (isset($m[0][1]) && $m[0][1] === '/');
 
-	$needsRewrite = false;
-	foreach ($map as $from => $to)
-	{
-		if ($from !== $to)
-		{
-			$needsRewrite = true;
-			break;
-		}
-	}
-	if (!$needsRewrite)
-	{
-		return $html;
-	}
+			if ($isClose)
+			{
+				$out = array_pop($closeLevels);
+				if ($out === null)
+				{
+					return $m[0];
+				}
 
-	// Placeholder pass avoids colliding replacements (h4→h3 then h3→h2).
-	$tokens = [];
-	foreach ($map as $from => $to)
-	{
-		if ($from === $to)
-		{
-			continue;
-		}
-		$token = "\x00GNKMEDH{$from}\x00";
-		$tokens[$token] = $to;
-		$html = preg_replace('/<h' . $from . '\b/i', '<' . $token, $html);
-		$html = preg_replace('/<\/h' . $from . '\s*>/i', '</' . $token . '>', $html);
-	}
-	foreach ($tokens as $token => $to)
-	{
-		$html = str_replace(
-			['<' . $token, '</' . $token . '>'],
-			['<h' . $to, '</h' . $to . '>'],
-			$html
-		);
-	}
+				return '</h' . $out . '>';
+			}
 
-	return $html;
+			while ($stack && $stack[count($stack) - 1]['orig'] >= $level)
+			{
+				array_pop($stack);
+			}
+			if (!$stack)
+			{
+				$stack[] = ['orig' => 0, 'out' => 1];
+			}
+
+			$parentOut = (int)$stack[count($stack) - 1]['out'];
+			$out = min($level, $parentOut + 1);
+			if ($out < 1)
+			{
+				$out = 1;
+			}
+			elseif ($out > 6)
+			{
+				$out = 6;
+			}
+
+			$stack[] = ['orig' => $level, 'out' => $out];
+			$closeLevels[] = $out;
+
+			$attrs = isset($m[2]) ? $m[2] : '';
+
+			return '<h' . $out . $attrs . '>';
+		},
+		$html
+	);
 }
 
 function EditData ($DATA){
