@@ -1,6 +1,6 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
-$APPLICATION->SetPageProperty("title", "О нашей компании");
+$APPLICATION->SetPageProperty("title", "О компании GNKMED — поставщик гинекологического оборудования");
 $APPLICATION->SetPageProperty("description", "Информация о магазине гинекологического оборудования gnkmed.ru");
 $APPLICATION->SetTitle("О компании");
 ?><div class="wrapper">
