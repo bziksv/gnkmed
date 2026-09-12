@@ -245,7 +245,7 @@ unset($basketAction);
 	<div class="catalog-text">
 	<?
 	if($arSection['DESCRIPTION'] && $arSection['UF_DESC_SECTION']){
-		print $arSection['DESCRIPTION'];
+		print gnkmedNormalizeDetailHeadings($arSection['DESCRIPTION']);
 	}
 	?>
 	</div>
