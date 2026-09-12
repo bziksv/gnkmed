@@ -71,6 +71,8 @@ Disallow: /yandex_90ad791e6478dc32.html
 Disallow: /yandex_a7bd185cfbda2fb4.html
 Disallow: /yandex_d6ebfecf22ea59da.html
 Disallow: /yandex_f8f022bdeef810b3.html
+Disallow: /googlee84fbc11d340a0de.html
+Disallow: /googleff0da0f1125cc1fa.html
 Disallow: /about/content.php
 Disallow: /ajax/popup_option.php
 Disallow: /catalog/sidebar.php
