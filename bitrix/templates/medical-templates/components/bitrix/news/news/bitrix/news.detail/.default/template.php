@@ -65,6 +65,21 @@ $this->setFrameMode(true);
 			<?endif;?>
 			<img src="<?=$arResult["DETAIL_PICTURE"]["SRC"]?>" alt="">
 		</div>
-		<?echo $arResult["DETAIL_TEXT"];?>
+		<?php
+		$detailHtml = (string)$arResult['DETAIL_TEXT'];
+		// Page already has H1 (title). If DETAIL_TEXT starts at H3+ with no H2, promote so hierarchy is H1→H2…
+		if ($detailHtml !== '' && !preg_match('/<h2\b/i', $detailHtml) && preg_match_all('/<h([3-6])\b/i', $detailHtml, $headingMatches)) {
+			$minLevel = min(array_map('intval', $headingMatches[1]));
+			$shift = $minLevel - 2;
+			if ($shift > 0) {
+				for ($level = 6; $level >= $minLevel; $level--) {
+					$newLevel = $level - $shift;
+					$detailHtml = preg_replace('/<h' . $level . '\b/i', '<h' . $newLevel, $detailHtml);
+					$detailHtml = preg_replace('/<\/h' . $level . '\s*>/i', '</h' . $newLevel . '>', $detailHtml);
+				}
+			}
+		}
+		echo $detailHtml;
+		?>
 	</div>
 
