@@ -11,7 +11,12 @@ if (method_exists($this, 'setFrameMode')) {
 	$this->setFrameMode(true);
 }
 
-$this->addExternalCss($this->GetFolder().'/style.css');
+// Direct <link> so styles work when the banner is injected in OnEndBufferContent
+// (Bitrix Asset::addCss is too late for <head> at that point).
+$ncaCssHref = $this->GetFolder().'/style.css';
+?>
+<link rel="stylesheet" href="<?=htmlspecialcharsbx($ncaCssHref)?>">
+<?php
 
 $cookieName = htmlspecialcharsbx($arResult['COOKIE_NAME']);
 $textVer = (int)$arResult['TEXTVER'];
