@@ -243,16 +243,34 @@ function gnkmedSanitizeHtmlMarkup($html)
 		);
 	}
 
-	// Orphan </p> and empty <p></p>
-	$html = preg_replace('#<p>\s*</p>#i', '', $html);
+	// <p> cannot wrap headings/lists/hr (editor paste). Split/unwrap until stable.
+	for ($i = 0; $i < 3; $i++)
+	{
+		$before = $html;
+		$html = preg_replace('#<p>\s*(<hr\b[^>]*/?>)\s*#i', '$1<p>', $html);
+		$html = preg_replace('#<p>\s*(<hr\b[^>]*/?>)\s*</p>#i', '$1', $html);
+		$html = preg_replace(
+			'#<p>\s*(<(?:h[1-6]|ul|ol|table|blockquote)\b[^>]*>.*?</(?:h[1-6]|ul|ol|table|blockquote)>)\s*</p>#is',
+			'$1',
+			$html
+		);
+		$html = preg_replace('#<p>\s*</p>#i', '', $html);
+		if ($html === $before)
+		{
+			break;
+		}
+	}
 	$html = gnkmedDropOrphanCloseTags($html, 'p');
-	$html = gnkmedDropOrphanCloseTags($html, 'span');
 
 	// Close unclosed list tags at end of fragment
 	$html = gnkmedCloseUnclosedLists($html);
 
 	// Close unclosed <span> before block-level tags (li/ul/h2/div/…)
 	$html = gnkmedCloseSpansBeforeBlocks($html);
+	$html = gnkmedDropOrphanCloseTags($html, 'span');
+
+	// Empty lists left by the visual editor
+	$html = preg_replace('#<(ul|ol)\b[^>]*>\s*</\1>#i', '', $html);
 
 	return $html;
 }
@@ -369,10 +387,11 @@ function gnkmedCloseSpansBeforeBlocks($html)
 
 			if (preg_match('/^<\/span>/i', $tag))
 			{
-				if ($spanDepth > 0)
+				if ($spanDepth <= 0)
 				{
-					$spanDepth--;
+					return '';
 				}
+				$spanDepth--;
 				return $tag;
 			}
 
