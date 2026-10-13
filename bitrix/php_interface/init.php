@@ -54,6 +54,12 @@ function gnkmedRepairImgTag($m)
 	$tag = preg_replace('/\b(alt|src|title)\s*=\s*"([^"]*?)\s+"/iu', '$1="$2"', $tag);
 	$tag = preg_replace("/\b(alt|src|title)\s*=\s*'([^']*?)\s+'/iu", "$1='$2'", $tag);
 
+	// Nu HTML: every <img> needs alt (empty is fine for decorative icons)
+	if (!preg_match('/\salt\s*=/i', $tag))
+	{
+		$tag = preg_replace('/\s*\/?>$/', ' alt="">', $tag, 1);
+	}
+
 	return $tag;
 }
 
