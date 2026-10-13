@@ -55,7 +55,7 @@ $this->setFrameMode(true);
 					?>
 				<li class="cart__slider_item" data-thumb="<?=$arFileThumb['src']?>" data-src="<?=$arFileFull['src']?>">
 					<? if(!$ph):?>
-					<img src="<?=$arFileTmp['src']?>" alt="<?=$arResult['NAME']?>" title="<?=$arResult['NAME']?>">
+					<img src="<?=htmlspecialcharsbx($arFileTmp['src'])?>" alt="<?=htmlspecialcharsbx(trim((string)$arResult['NAME']))?>" title="<?=htmlspecialcharsbx(trim((string)$arResult['NAME']))?>">
 					<? else: ?>
 					<img src="<?=$arFileTmp['src']?>" alt="<?=$arResult['ID']?>" title="<?=$arResult['ID']?>">
 					<? endif; ?>

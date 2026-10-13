@@ -24,7 +24,7 @@ $incPriceReq = 0;
 					<div class="goods__alert">-<?=$item["PRICES"]["BASE"]["DISCOUNT_DIFF_PERCENT"]?>%</div>
 				<?endif;?>
 				<div class="goods__img">
-					<a href="<?=$item['DETAIL_PAGE_URL'];?>"><img src="<?=$item['PREVIEW_PICTURE']['SRC']?>" alt="<?=$item['NAME']?>" title="<?=$item['NAME']?>"></a>
+					<a href="<?=$item['DETAIL_PAGE_URL'];?>"><img src="<?=htmlspecialcharsbx($item['PREVIEW_PICTURE']['SRC'])?>" alt="<?=htmlspecialcharsbx(trim((string)$item['NAME']))?>" title="<?=htmlspecialcharsbx(trim((string)$item['NAME']))?>"></a>
 				</div>
 				<div class="goods__content">
 					<a href="<?=$item['DETAIL_PAGE_URL'];?>" class="goods__name"><?=$item['IPROPERTY_VALUES']['ELEMENT_PAGE_TITLE']?></a>

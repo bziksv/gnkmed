@@ -41,7 +41,7 @@ $incPriceReq = 0;
                     <? endif; ?>
 					
 					<div class="goods__img">
-						<a href="<?=$item['DETAIL_PAGE_URL'];?>"><img src="<?=$item['PREVIEW_PICTURE']['SRC']?>" alt="<?=$item['NAME']?>" title="<?=$item['NAME']?>"></a>
+						<a href="<?=$item['DETAIL_PAGE_URL'];?>"><img src="<?=htmlspecialcharsbx($item['PREVIEW_PICTURE']['SRC'])?>" alt="<?=htmlspecialcharsbx(trim((string)$item['NAME']))?>" title="<?=htmlspecialcharsbx(trim((string)$item['NAME']))?>"></a>
 					</div>
 					<a href="<?=$item['DETAIL_PAGE_URL'];?>" class="goods__name"><?=$item['IPROPERTY_VALUES']['ELEMENT_PAGE_TITLE']?></a>
 

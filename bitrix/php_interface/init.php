@@ -19,6 +19,44 @@ function gnkmedCookiesAcceptBeforeBody(&$content)
 }
 
 
+/**
+ * Repair common broken <img> attributes from the visual editor / trailing spaces in values.
+ */
+function gnkmedRepairImgTag($m)
+{
+	$tag = is_array($m) ? $m[0] : (string)$m;
+
+	$tag = preg_replace('#alt="([^"]*?)\s+src="#iu', 'alt="$1" src="', $tag);
+	$tag = preg_replace("#alt='([^']*?)\s+src='#iu", "alt='$1' src='", $tag);
+	$tag = preg_replace('#;class="\s*loading="#i', '" loading="', $tag);
+	$tag = preg_replace('#;(class|loading)="#i', '" $1="', $tag);
+
+	// Stray empty quote-attr: src="..." "="" align=
+	$tag = preg_replace('/\s+"\s*=\s*(?:""|\'\')/', '', $tag);
+
+	// Extra quote BETWEEN closed attributes only (not the closing quote of "value ")
+	$tag = preg_replace('/(?<=["\'])\s+"\s+(?=[a-zA-Z_:][-a-zA-Z0-9_:.]*\s*=)/', ' ', $tag);
+
+	// Missing closing quote before next attr: src="file.png height="67" / alt="text title="text"
+	$nextAttr = '(?:alt|src|title|width|height|class|style|align|loading|id|border|hspace|vspace)';
+	$tag = preg_replace(
+		'/\b(alt|src|title|width|height)\s*=\s*"([^"]*?)\s+(?=' . $nextAttr . '\s*=\s*")/iu',
+		'$1="$2" ',
+		$tag
+	);
+	$tag = preg_replace(
+		"/\b(alt|src|title|width|height)\s*=\s*'([^']*?)\s+(?=" . $nextAttr . "\s*=\s*')/iu",
+		"$1='$2' ",
+		$tag
+	);
+
+	// Trim trailing spaces inside quoted attr values
+	$tag = preg_replace('/\b(alt|src|title)\s*=\s*"([^"]*?)\s+"/iu', '$1="$2"', $tag);
+	$tag = preg_replace("/\b(alt|src|title)\s*=\s*'([^']*?)\s+'/iu", "$1='$2'", $tag);
+
+	return $tag;
+}
+
 function gnkmedSanitizeBufferContent(&$content)
 {
 	if (!is_string($content) || $content === '' || (defined('ADMIN_SECTION') && ADMIN_SECTION === true))
@@ -37,16 +75,7 @@ function gnkmedSanitizeBufferContent(&$content)
 	{
 		$content = preg_replace_callback(
 			'/<img\b[^>]*>/i',
-			static function ($m) {
-				$tag = $m[0];
-				$tag = preg_replace('#alt="([^"]*?)\s+src="#i', 'alt="$1" src="', $tag);
-				$tag = preg_replace("#alt='([^']*?)\s+src='#i", "alt='$1' src='", $tag);
-				$tag = preg_replace('#;class="\s*loading="#i', '" loading="', $tag);
-				$tag = preg_replace('#;(class|loading)="#i', '" $1="', $tag);
-				$tag = preg_replace('/\s+"\s*=\s*(?:""|\'\')/', '', $tag);
-				$tag = preg_replace('/\s+"\s+(?=[a-zA-Z_:][-a-zA-Z0-9_:.]*\s*=)/', ' ', $tag);
-				return $tag;
-			},
+			'gnkmedRepairImgTag',
 			$content
 		);
 	}
@@ -187,23 +216,14 @@ function gnkmedSanitizeHtmlMarkup($html)
 	{
 		$html = preg_replace_callback(
 			'/<img\b[^>]*>/iu',
-			static function ($m) {
-				$tag = $m[0];
-				$tag = preg_replace('#alt="([^"]*?)\s+src="#iu', 'alt="$1" src="', $tag);
-				$tag = preg_replace("#alt='([^']*?)\s+src='#iu", "alt='$1' src='", $tag);
-				$tag = preg_replace('#;class="\s*loading="#i', '" loading="', $tag);
-				$tag = preg_replace('#;(class|loading)="#i', '" $1="', $tag);
-				// Stray quote attribute: src="..." "="" align="right"
-				$tag = preg_replace('/\s+"\s*=\s*(?:""|\'\')/', '', $tag);
-				$tag = preg_replace('/\s+"\s+(?=[a-zA-Z_:][-a-zA-Z0-9_:.]*\s*=)/', ' ', $tag);
-				return $tag;
-			},
+			'gnkmedRepairImgTag',
 			$html
 		);
 	}
 
-	// Floating quote between attributes: src="..." " align="right"
-	// Do NOT match the legitimate closing quote of values that end with a space: alt="text " src=
+	// Floating EXTRA quote between attributes: src="..." " align="right"
+	// Requires a quote immediately before the gap so we do not eat the closing quote of
+	// values that end with a space: src="file.png " height=…
 	$html = preg_replace('/(?<=["\'])\s+"\s+(?=[a-zA-Z_:][-a-zA-Z0-9_:.]*\s*=)/', ' ', $html);
 	$html = preg_replace('/(?<=["\'])\s+"\s*=\s*(?:""|\'\')/', '', $html);
 	$html = preg_replace('/(?<=["\'])\s+"\s*>/', '>', $html);
