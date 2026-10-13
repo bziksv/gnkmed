@@ -712,14 +712,23 @@ ol,ul
 }
 .slider__item
 {
-    background: #afbccd no-repeat center/cover;
-    padding: 134px 0 285px;
+    background: #afbccd no-repeat left center / cover;
+    box-sizing: border-box;
+    height: 567px;
+    position: relative;
 }
 .slider__item-link
 {
-    display: block;
+    bottom: 0;
+    box-sizing: border-box;
     color: inherit;
+    display: block;
+    left: 0;
+    padding: 134px 0 0;
+    position: absolute;
+    right: 0;
     text-decoration: none;
+    top: 0;
 }
 .slider__title
 {
@@ -728,7 +737,6 @@ ol,ul
     font-weight: 500;
     letter-spacing: -.04em;
     line-height: 1.1;
-    min-height: 148px;
 }
 .slider__title span
 {
@@ -3535,7 +3543,11 @@ ol,ul
     }
     .slider__item
     {
-        padding: 55px 60px 117px;
+        height: 280px;
+    }
+    .slider__item-link
+    {
+        padding: 55px 60px 0;
     }
     .slider .lSPager.lSpg
     {
@@ -4340,7 +4352,11 @@ ol,ul
     }
     .slider__item
     {
-        padding: 16px 30px 34px;
+        height: 180px;
+    }
+    .slider__item-link
+    {
+        padding: 16px 30px 0;
     }
     .slider__title
     {
