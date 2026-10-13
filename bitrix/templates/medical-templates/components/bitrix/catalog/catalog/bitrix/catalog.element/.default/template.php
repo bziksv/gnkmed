@@ -123,7 +123,9 @@ $this->setFrameMode(true);
 		<div class="tabs__content text">
 			<?php
 			$detailHtml = (string)($arResult['~DETAIL_TEXT'] ?? $arResult['DETAIL_TEXT']);
-			$detailHtml = gnkmedNormalizeDetailHeadings($detailHtml);
+			// Same text source as the page <h1> above
+			$pageTitle = htmlspecialchars_decode((string)($arResult['NAME'] ?? ''), ENT_QUOTES);
+			$detailHtml = gnkmedNormalizeDetailHeadings($detailHtml, $pageTitle);
 			echo $detailHtml;
 			?>
 		</div>

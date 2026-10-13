@@ -65,6 +65,6 @@ $this->setFrameMode(true);
 			<?endif;?>
 			<img src="<?=$arResult["DETAIL_PICTURE"]["SRC"]?>" alt="">
 		</div>
-		<?php echo gnkmedNormalizeDetailHeadings((string)$arResult['DETAIL_TEXT']); ?>
+		<?php echo gnkmedNormalizeDetailHeadings((string)($arResult['~DETAIL_TEXT'] ?? $arResult['DETAIL_TEXT']), (string)$arResult['NAME']); ?>
 	</div>
 

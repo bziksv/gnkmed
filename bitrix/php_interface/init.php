@@ -409,13 +409,53 @@ function gnkmedCloseSpansBeforeBlocks($html)
 }
 
 /**
+ * Normalize visible heading text for H1/H2 duplicate checks.
+ */
+function gnkmedNormalizeHeadingText($text)
+{
+	$text = html_entity_decode(strip_tags((string)$text), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+	$text = preg_replace('/\s+/u', ' ', $text);
+	$text = trim((string)$text);
+	if (function_exists('mb_strtolower'))
+	{
+		return mb_strtolower($text, 'UTF-8');
+	}
+
+	return strtolower($text);
+}
+
+/**
  * Fix DETAIL_TEXT heading outline after page H1: no level skips in document order.
  * Sibling headings with the same original level stay siblings (H2→H4×N → H2→H3×N).
+ * Headings that repeat the page H1 text are demoted to <div> (keep styles, drop from outline).
  */
-function gnkmedNormalizeDetailHeadings($html)
+function gnkmedNormalizeDetailHeadings($html, $pageTitle = '')
 {
 	$html = gnkmedSanitizeHtmlMarkup((string)$html);
-	if ($html === '' || !preg_match('/<h[1-6]\b/i', $html))
+	if ($html === '')
+	{
+		return $html;
+	}
+
+	$pageTitleNorm = gnkmedNormalizeHeadingText($pageTitle);
+	if ($pageTitleNorm !== '' && preg_match('/<h[1-6]\b/i', $html))
+	{
+		$html = (string)preg_replace_callback(
+			'/<h([1-6])(\s[^>]*)?>(.*?)<\/h\1>/is',
+			static function ($m) use ($pageTitleNorm) {
+				if (gnkmedNormalizeHeadingText($m[3]) !== $pageTitleNorm)
+				{
+					return $m[0];
+				}
+
+				$attrs = isset($m[2]) ? $m[2] : '';
+				return '<div' . $attrs . '>' . $m[3] . '</div>';
+			},
+			$html
+		);
+	}
+
+	if (!preg_match('/<h[1-6]\b/i', $html))
 	{
 		return $html;
 	}
