@@ -28,7 +28,7 @@ $counterPrefix = 'goods__counter_input_' . preg_replace('/\W+/', '', (string)($a
 
                         <?php if (!empty($arItem['DESCRIPTION'])): ?>
                             <br/>
-                            <span class="goods__name__desc"><?=$arItem['DESCRIPTION']?></span>
+                            <div class="goods__name__desc"><?=gnkmedSanitizeHtmlMarkup((string)$arItem['DESCRIPTION'])?></div>
                         <?php endif; ?>
                     </a>
                     <div class="goods__info">

@@ -122,7 +122,7 @@ $this->setFrameMode(true);
 		<a href="#" class="tabs__nav">Описание</a>
 		<div class="tabs__content text">
 			<?php
-			$detailHtml = (string)$arResult['DETAIL_TEXT'];
+			$detailHtml = (string)($arResult['~DETAIL_TEXT'] ?? $arResult['DETAIL_TEXT']);
 			// <p> cannot contain <hr>/headings/lists — libxml auto-closes <p> and then flags stray </p>
 			$detailHtml = preg_replace(
 				'#<p>\s*(<(?:hr|h[1-6]|ul|ol|table|div)\b[^>]*>)\s*(.*?)\s*</p>#is',

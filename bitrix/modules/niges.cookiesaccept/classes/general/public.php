@@ -2,17 +2,23 @@
 class CNigesCookiesAcceptPublic
 {
 	/**
-	 * Inject cookie notice at the end of page generation.
+	 * Inject cookie notice before </body> (not after </html>).
 	 */
-	public static function OnEpilog()
+	public static function OnEndBufferContent(&$content)
 	{
-		global $APPLICATION;
+		if (!is_string($content) || $content === '') {
+			return;
+		}
 
 		if (!CModule::IncludeModule(cookiesaccept_MODULE_ID)) {
 			return;
 		}
 
 		if (COption::GetOptionString(cookiesaccept_MODULE_ID, 'ACTIVE', 'N', SITE_ID) !== 'Y') {
+			return;
+		}
+
+		if (defined('ADMIN_SECTION') && ADMIN_SECTION === true) {
 			return;
 		}
 
@@ -26,6 +32,12 @@ class CNigesCookiesAcceptPublic
 			return;
 		}
 
+		if (strpos($content, 'id="nca-cookiesaccept-line"') !== false) {
+			return;
+		}
+
+		global $APPLICATION;
+		ob_start();
 		$APPLICATION->IncludeComponent(
 			'niges:cookiesaccept',
 			'.default',
@@ -33,5 +45,27 @@ class CNigesCookiesAcceptPublic
 			false,
 			array('HIDE_ICONS' => 'Y')
 		);
+		$banner = ob_get_clean();
+		if ($banner === '' || $banner === false) {
+			return;
+		}
+
+		$pos = strripos($content, '</body>');
+		if ($pos !== false) {
+			$content = substr($content, 0, $pos) . $banner . substr($content, $pos);
+			return;
+		}
+
+		$pos = strripos($content, '</html>');
+		if ($pos !== false) {
+			$content = substr($content, 0, $pos) . $banner . substr($content, $pos);
+		}
+	}
+
+	/**
+	 * Legacy hook — kept for module upgrade safety; no-op when buffer hook is active.
+	 */
+	public static function OnEpilog()
+	{
 	}
 }

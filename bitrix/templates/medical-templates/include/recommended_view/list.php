@@ -29,7 +29,7 @@ $counterPrefix = 'goods__counter_input_' . preg_replace('/\W+/', '', (string)($a
 
                 <?php if (!empty($item['DESCRIPTION'])): ?>
                 <div class="goods__text">
-                    <?=$item['DESCRIPTION']?>
+                    <?=gnkmedSanitizeHtmlMarkup((string)$item['DESCRIPTION'])?>
                 </div>
                 <?php endif; ?>
             </div>

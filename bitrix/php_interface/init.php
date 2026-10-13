@@ -5,6 +5,50 @@ define("IBLOCK_CATALOG","33");
 AddEventHandler("main", "OnPageStart", "gnkmedDisableCaptcha");
 AddEventHandler("main", "OnBeforeUserLogin", "gnkmedDisableLoginCaptcha");
 AddEventHandler("main", "OnPageStart", "gnkmedDisableCompositeForForms");
+AddEventHandler('main', 'OnEndBufferContent', 'gnkmedCookiesAcceptBeforeBody');
+AddEventHandler('main', 'OnEndBufferContent', 'gnkmedSanitizeBufferContent');
+
+function gnkmedCookiesAcceptBeforeBody(&$content)
+{
+	if (!CModule::IncludeModule('niges.cookiesaccept') || !class_exists('CNigesCookiesAcceptPublic'))
+	{
+		return;
+	}
+
+	CNigesCookiesAcceptPublic::OnEndBufferContent($content);
+}
+
+
+function gnkmedSanitizeBufferContent(&$content)
+{
+	if (!is_string($content) || $content === '' || (defined('ADMIN_SECTION') && ADMIN_SECTION === true))
+	{
+		return;
+	}
+
+	// Only safe global fixes — do not run full markup rewrite on the whole page shell
+	if (stripos($content, 'noindex') !== false)
+	{
+		$content = preg_replace('/<\s*noindex\s*>/i', '<!--noindex-->', $content);
+		$content = preg_replace('/<\s*\/\s*noindex\s*>/i', '<!--/noindex-->', $content);
+	}
+
+	if (stripos($content, '<img') !== false)
+	{
+		$content = preg_replace_callback(
+			'/<img\b[^>]*>/i',
+			static function ($m) {
+				$tag = $m[0];
+				$tag = preg_replace('#alt="([^"]*?)\s+src="#i', 'alt="$1" src="', $tag);
+				$tag = preg_replace("#alt='([^']*?)\s+src='#i", "alt='$1' src='", $tag);
+				$tag = preg_replace('#;class="\s*loading="#i', '" loading="', $tag);
+				$tag = preg_replace('#;(class|loading)="#i', '" $1="', $tag);
+				return $tag;
+			},
+			$content
+		);
+	}
+}
 
 function gnkmedDisableCompositeForForms()
 {
@@ -136,12 +180,38 @@ function gnkmedSanitizeHtmlMarkup($html)
 		$html = preg_replace('/<\s*\/\s*noindex\s*>/i', '<!--/noindex-->', $html);
 	}
 
-	// Stray quote token before next attribute: src="..." " align="right"
-	$html = preg_replace('/\s+"\s+(?=[a-zA-Z_:][-a-zA-Z0-9_:.]*\s*=)/', ' ', $html);
-	$html = preg_replace('/\s+"\s*>/', '>', $html);
+	// Repair broken <img> attributes from visual editor paste
+	if (stripos($html, '<img') !== false)
+	{
+		$html = preg_replace_callback(
+			'/<img\b[^>]*>/iu',
+			static function ($m) {
+				$tag = $m[0];
+				$tag = preg_replace('#alt="([^"]*?)\s+src="#iu', 'alt="$1" src="', $tag);
+				$tag = preg_replace("#alt='([^']*?)\s+src='#iu", "alt='$1' src='", $tag);
+				$tag = preg_replace('#;class="\s*loading="#i', '" loading="', $tag);
+				$tag = preg_replace('#;(class|loading)="#i', '" $1="', $tag);
+				return $tag;
+			},
+			$html
+		);
+	}
+
+	// Floating quote between attributes: src="..." " align="right"
+	// Do NOT match the legitimate closing quote of values that end with a space: alt="text " src=
+	$html = preg_replace('/(?<=["\'])\s+"\s+(?=[a-zA-Z_:][-a-zA-Z0-9_:.]*\s*=)/', ' ', $html);
+	$html = preg_replace('/(?<=["\'])\s+"\s*>/', '>', $html);
+
+	// <br> cannot be a direct child of <ul>/<ol>
+	$html = preg_replace('/(<(?:ul|ol)\b[^>]*>)\s*(?:<br\s*\/?>\s*)+/i', '$1', $html);
+	$html = preg_replace('/(?:<br\s*\/?>\s*)+(<\/(?:ul|ol)>)/i', '$1', $html);
+	$html = preg_replace('/<\/li>\s*<br\s*\/?>\s*(?=<li\b)/i', '</li>', $html);
+
+	// Drop obsolete align on lists
+	$html = preg_replace('/<(ul|ol)\b([^>]*?)\salign\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)/i', '<$1$2', $html);
 
 	// Duplicate alt on <img> — keep the first
-	if (stripos($html, 'alt=') !== false)
+	if (stripos($html, '<img') !== false)
 	{
 		$html = preg_replace_callback(
 			'/<img\b([^>]*)>/i',
@@ -150,7 +220,7 @@ function gnkmedSanitizeHtmlMarkup($html)
 				if (preg_match_all('/\salt\s*=\s*("|\')(.*?)\1/i', $attrs) < 2
 					&& preg_match_all('/\salt\s*=\s*[^\s>]+/i', $attrs) < 2)
 				{
-					return $m[0];
+					return '<img' . $attrs . '>';
 				}
 
 				$seen = false;
@@ -173,10 +243,109 @@ function gnkmedSanitizeHtmlMarkup($html)
 		);
 	}
 
+	// Orphan </p> and empty <p></p>
+	$html = preg_replace('#<p>\s*</p>#i', '', $html);
+	$html = gnkmedDropOrphanCloseTags($html, 'p');
+	$html = gnkmedDropOrphanCloseTags($html, 'span');
+
+	// Close unclosed list tags at end of fragment
+	$html = gnkmedCloseUnclosedLists($html);
+
 	// Close unclosed <span> before block-level tags (li/ul/h2/div/…)
 	$html = gnkmedCloseSpansBeforeBlocks($html);
 
 	return $html;
+}
+
+/**
+ * Append missing </li>/</ul>/</ol> for content fragments from the visual editor.
+ */
+function gnkmedCloseUnclosedLists($html)
+{
+	if ($html === '' || (stripos($html, '<ul') === false && stripos($html, '<ol') === false))
+	{
+		return $html;
+	}
+
+	$stack = [];
+	if (!preg_match_all('/<\/?(?:ul|ol|li)\b[^>]*>/i', $html, $matches, PREG_SET_ORDER))
+	{
+		return $html;
+	}
+
+	foreach ($matches as $m)
+	{
+		$tag = strtolower($m[0]);
+		$isClose = isset($tag[1]) && $tag[1] === '/';
+		if (preg_match('/<\/?(ul|ol|li)\b/i', $m[0], $tm))
+		{
+			$name = strtolower($tm[1]);
+		}
+		else
+		{
+			continue;
+		}
+
+		if ($isClose)
+		{
+			// pop until matching open
+			for ($i = count($stack) - 1; $i >= 0; $i--)
+			{
+				if ($stack[$i] === $name)
+				{
+					array_splice($stack, $i, 1);
+					break;
+				}
+			}
+		}
+		else
+		{
+			$stack[] = $name;
+		}
+	}
+
+	if (!$stack)
+	{
+		return $html;
+	}
+
+	$closeMap = ['li' => '</li>', 'ul' => '</ul>', 'ol' => '</ol>'];
+	$suffix = '';
+	for ($i = count($stack) - 1; $i >= 0; $i--)
+	{
+		$suffix .= $closeMap[$stack[$i]] ?? '';
+	}
+
+	return $html . $suffix;
+}
+
+/**
+ * Remove closing tags that have no matching open tag.
+ */
+function gnkmedDropOrphanCloseTags($html, $tag)
+{
+	$tag = preg_quote($tag, '/');
+	$depth = 0;
+
+	return (string)preg_replace_callback(
+		'/<(\/?)' . $tag . '\b[^>]*>/i',
+		static function ($m) use (&$depth) {
+			$isClose = ($m[1] === '/');
+			if ($isClose)
+			{
+				if ($depth <= 0)
+				{
+					return '';
+				}
+				$depth--;
+				return $m[0];
+			}
+
+			$depth++;
+			return $m[0];
+		},
+		$html
+	);
 }
 
 /**
