@@ -29,11 +29,11 @@ $incPriceReq = 0;
 				<div class="goods__content">
 					<a href="<?=$item['DETAIL_PAGE_URL'];?>" class="goods__name"><?=$item['IPROPERTY_VALUES']['ELEMENT_PAGE_TITLE']?></a>
 					<div class="goods__text">
-						<?=$item['PREVIEW_TEXT']?>
+						<?=gnkmedSanitizeHtmlMarkup($item['PREVIEW_TEXT'])?>
 					</div>
 					
 					<? if($item['PROPERTIES']['BADGE']['VALUE']): ?>
-						<div class="goods__availability true" style="background-color: <?=$item['PROPERTIES']['BADGE']['DESCRIPTION']?>"><?=$item['PROPERTIES']['BADGE']['VALUE'];?></div>
+						<div class="goods__availability true"<?php if (!empty($item['PROPERTIES']['BADGE']['DESCRIPTION'])): ?> style="background-color: <?=htmlspecialcharsbx($item['PROPERTIES']['BADGE']['DESCRIPTION'])?>"<?php endif; ?>><?=$item['PROPERTIES']['BADGE']['VALUE'];?></div>
 					<? endif; ?>
 				</div>
 				<div class="goods__main">

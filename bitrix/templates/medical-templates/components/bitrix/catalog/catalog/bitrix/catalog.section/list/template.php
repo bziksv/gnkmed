@@ -34,7 +34,7 @@ $incPriceReq = 0;
 					
 					<? if($item['PROPERTIES']['BADGE']['VALUE']): ?>
                     <div class="goods__badge">
-                        <div class="badge" style="background-color: <?=$item['PROPERTIES']['BADGE']['DESCRIPTION']?>">
+                        <div class="badge"<?php if (!empty($item['PROPERTIES']['BADGE']['DESCRIPTION'])): ?> style="background-color: <?=htmlspecialcharsbx($item['PROPERTIES']['BADGE']['DESCRIPTION'])?>"<?php endif; ?>>
                             <span><?=$item['PROPERTIES']['BADGE']['VALUE'];?></span>
                         </div>
                     </div>

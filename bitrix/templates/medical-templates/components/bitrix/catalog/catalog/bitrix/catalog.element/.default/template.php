@@ -27,7 +27,7 @@ $this->setFrameMode(true);
 			
 			<? if($arResult['PROPERTIES']['BADGE']['VALUE']): ?>
                 <div class="goods__badge">
-                    <div class="badge" style="background-color: <?=$arResult['PROPERTIES']['BADGE']['DESCRIPTION']?>">
+                    <div class="badge"<?php if (!empty($arResult['PROPERTIES']['BADGE']['DESCRIPTION'])): ?> style="background-color: <?=htmlspecialcharsbx($arResult['PROPERTIES']['BADGE']['DESCRIPTION'])?>"<?php endif; ?>>
                         <span><?=$arResult['PROPERTIES']['BADGE']['VALUE'];?></span>
                     </div>
                 </div>

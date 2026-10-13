@@ -62,13 +62,6 @@ if (!function_exists('gnkmedRecommendedBuildItemPicture')) {
 ?>
 <hr class="hr">
 
-<style>
-    .goods__name__desc{
-        font-weight: 400;
-        font-size: smaller;
-    }
-</style>
-
 <?php foreach ($arParams['SECTION']['UF_RECOMMENDED_LIST'] as $recIndex => $p):
 	$arSlider = explode('@', $p, 3);
 	$title = $arSlider[0];

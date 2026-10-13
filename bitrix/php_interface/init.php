@@ -120,12 +120,113 @@ function priceDiscount($id){
 }
 
 /**
+ * Fix common invalid markup in iblock HTML (noindex, duplicate attrs, stray quotes).
+ */
+function gnkmedSanitizeHtmlMarkup($html)
+{
+	$html = (string)$html;
+	if ($html === '')
+	{
+		return $html;
+	}
+
+	if (stripos($html, 'noindex') !== false)
+	{
+		$html = preg_replace('/<\s*noindex\s*>/i', '<!--noindex-->', $html);
+		$html = preg_replace('/<\s*\/\s*noindex\s*>/i', '<!--/noindex-->', $html);
+	}
+
+	// Stray quote token before next attribute: src="..." " align="right"
+	$html = preg_replace('/\s+"\s+(?=[a-zA-Z_:][-a-zA-Z0-9_:.]*\s*=)/', ' ', $html);
+	$html = preg_replace('/\s+"\s*>/', '>', $html);
+
+	// Duplicate alt on <img> — keep the first
+	if (stripos($html, 'alt=') !== false)
+	{
+		$html = preg_replace_callback(
+			'/<img\b([^>]*)>/i',
+			static function ($m) {
+				$attrs = $m[1];
+				if (preg_match_all('/\salt\s*=\s*("|\')(.*?)\1/i', $attrs) < 2
+					&& preg_match_all('/\salt\s*=\s*[^\s>]+/i', $attrs) < 2)
+				{
+					return $m[0];
+				}
+
+				$seen = false;
+				$attrs = preg_replace_callback(
+					'/\s+alt\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)/i',
+					static function ($a) use (&$seen) {
+						if ($seen)
+						{
+							return '';
+						}
+						$seen = true;
+						return $a[0];
+					},
+					$attrs
+				);
+
+				return '<img' . $attrs . '>';
+			},
+			$html
+		);
+	}
+
+	// Close unclosed <span> before block-level tags (li/ul/h2/div/…)
+	$html = gnkmedCloseSpansBeforeBlocks($html);
+
+	return $html;
+}
+
+/**
+ * Insert </span> before block tags while a span is still open.
+ */
+function gnkmedCloseSpansBeforeBlocks($html)
+{
+	$spanDepth = 0;
+	$pattern = '/<\/?span\b[^>]*>|<\/?(?:ul|ol|li|h[1-6]|div|table|thead|tbody|tr|td|th|p|section|article|header|footer|nav|aside)\b[^>]*>/i';
+
+	return (string)preg_replace_callback(
+		$pattern,
+		static function ($m) use (&$spanDepth) {
+			$tag = $m[0];
+
+			if (preg_match('/^<span\b/i', $tag))
+			{
+				$spanDepth++;
+				return $tag;
+			}
+
+			if (preg_match('/^<\/span>/i', $tag))
+			{
+				if ($spanDepth > 0)
+				{
+					$spanDepth--;
+				}
+				return $tag;
+			}
+
+			$prefix = '';
+			while ($spanDepth > 0)
+			{
+				$prefix .= '</span>';
+				$spanDepth--;
+			}
+
+			return $prefix . $tag;
+		},
+		$html
+	);
+}
+
+/**
  * Fix DETAIL_TEXT heading outline after page H1: no level skips in document order.
  * Sibling headings with the same original level stay siblings (H2→H4×N → H2→H3×N).
  */
 function gnkmedNormalizeDetailHeadings($html)
 {
-	$html = (string)$html;
+	$html = gnkmedSanitizeHtmlMarkup((string)$html);
 	if ($html === '' || !preg_match('/<h[1-6]\b/i', $html))
 	{
 		return $html;
@@ -145,7 +246,8 @@ function gnkmedNormalizeDetailHeadings($html)
 				$out = array_pop($closeLevels);
 				if ($out === null)
 				{
-					return $m[0];
+					// Orphan closing heading in content — drop it
+					return '';
 				}
 
 				return '</h' . $out . '>';

@@ -3,7 +3,7 @@ if (!$arCityes = include $_SERVER['DOCUMENT_ROOT'] . '/.cityes.php') {
     return;
 }
 ?>
-<div class="mfeedback-p" id="location" style="max-width: 500px;">
+<div class="mfeedback-p" id="location">
     <span class="button b-close"><span>&times;</span></span>
     <div class="mfeedback-p-head">Выбор города</div>
 
@@ -31,38 +31,6 @@ if (!$arCityes = include $_SERVER['DOCUMENT_ROOT'] . '/.cityes.php') {
     </div>
     <?php endif; ?>
 </div>
-
-<style>
-    #location.mfeedback-p {
-        display: none;
-    }
-    .city .item-city {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        margin: 10px auto;
-        padding: 0 10px;
-    }
-    .city .item-city a {
-        width: 140px;
-        margin-bottom: 5px;
-        color: #575b71;
-        text-decoration: none;
-    }
-    .city .item-city a:hover {
-        color: #c82c30;
-    }
-    .city .item-city a.city-show {
-        flex-grow: 1;
-        text-align: center;
-    }
-    .city .item-city:last-child {
-        display: none;
-    }
-    .city .item-city:last-child.active {
-        display: flex;
-    }
-</style>
 
 <script>
     $(function () {

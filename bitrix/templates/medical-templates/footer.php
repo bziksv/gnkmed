@@ -70,7 +70,7 @@
             </div>
             <div class="footer__col flex-3">
                 <div class="footer__phone icon-phone">
-                    <img src="<?=SITE_TEMPLATE_PATH?>/img/footer_phone.jpg">
+                    <img alt="footer_phone" src="<?=SITE_TEMPLATE_PATH?>/img/footer_phone.jpg">
                     <span>88005555550</span>
                 </div>
                 <a href="javascript:void(0);" class="footer__callback footer__link callback-btn" data-text="Заказать звонок"></a>
@@ -91,7 +91,7 @@
         </div>
 
 		<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/local/php_interface/include/legal/helpers.php'; ?>
-		<div><noindex>На нашем сайте используются файлы <a target="_blank" href="<?=htmlspecialcharsbx(gnkmedLegalUrl('cookie'))?>" style="color: #fff; text-decoration: underline;">cookies</a> для улучшения работы ресурса, персонализации рекламы и анализа трафика. Продолжая пользоваться сайтом, вы принимаете <a target="_blank" style="color: #fff; text-decoration: underline;" href="<?=htmlspecialcharsbx(gnkmedLegalUrl('consent'))?>">согласие на обработку персональных данных</a> и подтверждаете, что ознакомлены с <a target="_blank" style="color: #fff; text-decoration: underline;" href="<?=htmlspecialcharsbx(gnkmedLegalUrl('policy'))?>">политикой обработки персональных данных</a>. Чтобы отказаться от cookies, отключите их сохранение в настройках браузера. На сайте также используются <a target="_blank" style="color: #fff; text-decoration: underline;" href="<?=htmlspecialcharsbx(gnkmedLegalUrl('recommendation'))?>">рекомендательные технологии</a>.</noindex></div>
+		<div><!--noindex-->На нашем сайте используются файлы <a target="_blank" href="<?=htmlspecialcharsbx(gnkmedLegalUrl('cookie'))?>" style="color: #fff; text-decoration: underline;">cookies</a> для улучшения работы ресурса, персонализации рекламы и анализа трафика. Продолжая пользоваться сайтом, вы принимаете <a target="_blank" style="color: #fff; text-decoration: underline;" href="<?=htmlspecialcharsbx(gnkmedLegalUrl('consent'))?>">согласие на обработку персональных данных</a> и подтверждаете, что ознакомлены с <a target="_blank" style="color: #fff; text-decoration: underline;" href="<?=htmlspecialcharsbx(gnkmedLegalUrl('policy'))?>">политикой обработки персональных данных</a>. Чтобы отказаться от cookies, отключите их сохранение в настройках браузера. На сайте также используются <a target="_blank" style="color: #fff; text-decoration: underline;" href="<?=htmlspecialcharsbx(gnkmedLegalUrl('recommendation'))?>">рекомендательные технологии</a><!--/noindex--></div>
 
     </div>
 </div>

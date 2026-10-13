@@ -12,7 +12,7 @@
 /** @var CBitrixComponent $component */
 ?>
 <div class="search-page">
-<form action="" method="get">
+<form action="<?=htmlspecialcharsbx($APPLICATION->GetCurPage(false))?>" method="get">
 <?if($arParams["USE_SUGGEST"] === "Y"):
 	if(strlen($arResult["REQUEST"]["~QUERY"]) && is_object($arResult["NAV_RESULT"]))
 	{

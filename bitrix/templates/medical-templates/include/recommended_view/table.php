@@ -21,7 +21,7 @@ $counterPrefix = 'goods__counter_input_' . preg_replace('/\W+/', '', (string)($a
 
                 <?php if (!empty($item['PROPERTIES']['BADGE']['VALUE'])): ?>
                     <div class="goods__badge">
-                        <div class="badge" style="background-color: <?=htmlspecialcharsbx($item['PROPERTIES']['BADGE']['DESCRIPTION'])?>">
+                        <div class="badge"<?php if (!empty($item['PROPERTIES']['BADGE']['DESCRIPTION'])): ?> style="background-color: <?=htmlspecialcharsbx($item['PROPERTIES']['BADGE']['DESCRIPTION'])?>"<?php endif; ?>>
                             <span><?=htmlspecialcharsbx($item['PROPERTIES']['BADGE']['VALUE'])?></span>
                         </div>
                     </div>
