@@ -534,9 +534,9 @@ $aMenuLinks = Array(
 	),
 	Array(
 		"Пессарий кольцо (маточное кольцо) Dr. Arabin, Германия", 
-		"/catalog/pessariy-koltso-matochnoe-koltso-dr-arabin-germaniya/", 
-		Array("/catalog/pessariy-koltso-matochnoe-koltso-dr-arabin-germaniya/"), 
-		Array("ID"=>"2905", "FROM_IBLOCK"=>"1", "IS_PARENT"=>"", "DEPTH_LEVEL"=>"3"), 
+		"/catalog/pessarii-germaniya/pessariy-koltso-matochnoe-koltso-dr-arabin-germaniya/", 
+		Array("/catalog/pessarii-germaniya/pessariy-koltso-matochnoe-koltso-dr-arabin-germaniya/"), 
+		Array("ID"=>"11205", "FROM_IBLOCK"=>"1", "IS_PARENT"=>"", "DEPTH_LEVEL"=>"3"), 
 		"" 
 	),
 	Array(

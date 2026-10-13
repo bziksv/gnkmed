@@ -43,6 +43,8 @@ function gnkmedSanitizeBufferContent(&$content)
 				$tag = preg_replace("#alt='([^']*?)\s+src='#i", "alt='$1' src='", $tag);
 				$tag = preg_replace('#;class="\s*loading="#i', '" loading="', $tag);
 				$tag = preg_replace('#;(class|loading)="#i', '" $1="', $tag);
+				$tag = preg_replace('/\s+"\s*=\s*(?:""|\'\')/', '', $tag);
+				$tag = preg_replace('/\s+"\s+(?=[a-zA-Z_:][-a-zA-Z0-9_:.]*\s*=)/', ' ', $tag);
 				return $tag;
 			},
 			$content
@@ -191,6 +193,9 @@ function gnkmedSanitizeHtmlMarkup($html)
 				$tag = preg_replace("#alt='([^']*?)\s+src='#iu", "alt='$1' src='", $tag);
 				$tag = preg_replace('#;class="\s*loading="#i', '" loading="', $tag);
 				$tag = preg_replace('#;(class|loading)="#i', '" $1="', $tag);
+				// Stray quote attribute: src="..." "="" align="right"
+				$tag = preg_replace('/\s+"\s*=\s*(?:""|\'\')/', '', $tag);
+				$tag = preg_replace('/\s+"\s+(?=[a-zA-Z_:][-a-zA-Z0-9_:.]*\s*=)/', ' ', $tag);
 				return $tag;
 			},
 			$html
@@ -200,12 +205,20 @@ function gnkmedSanitizeHtmlMarkup($html)
 	// Floating quote between attributes: src="..." " align="right"
 	// Do NOT match the legitimate closing quote of values that end with a space: alt="text " src=
 	$html = preg_replace('/(?<=["\'])\s+"\s+(?=[a-zA-Z_:][-a-zA-Z0-9_:.]*\s*=)/', ' ', $html);
+	$html = preg_replace('/(?<=["\'])\s+"\s*=\s*(?:""|\'\')/', '', $html);
 	$html = preg_replace('/(?<=["\'])\s+"\s*>/', '>', $html);
 
 	// <br> cannot be a direct child of <ul>/<ol>
 	$html = preg_replace('/(<(?:ul|ol)\b[^>]*>)\s*(?:<br\s*\/?>\s*)+/i', '$1', $html);
 	$html = preg_replace('/(?:<br\s*\/?>\s*)+(<\/(?:ul|ol)>)/i', '$1', $html);
 	$html = preg_replace('/<\/li>\s*<br\s*\/?>\s*(?=<li\b)/i', '</li>', $html);
+
+	// Nested list closed outside parent <li>: </li><ul>...</ul><li> → move </li> after nested list
+	$html = preg_replace(
+		'#</li>\s*(<(ul|ol)\b[^>]*>.*?</\2>)\s*(?=<li\b|</(?:ul|ol)>)#is',
+		'$1</li>',
+		$html
+	);
 
 	// Drop obsolete align on lists
 	$html = preg_replace('/<(ul|ol)\b([^>]*?)\salign\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)/i', '<$1$2', $html);
@@ -244,11 +257,18 @@ function gnkmedSanitizeHtmlMarkup($html)
 	}
 
 	// <p> cannot wrap headings/lists/hr (editor paste). Split/unwrap until stable.
-	for ($i = 0; $i < 3; $i++)
+	for ($i = 0; $i < 5; $i++)
 	{
 		$before = $html;
+		// <p><hr>… → pull hr out (may leave <p><h2>… or empty <p>)
 		$html = preg_replace('#<p>\s*(<hr\b[^>]*/?>)\s*#i', '$1<p>', $html);
 		$html = preg_replace('#<p>\s*(<hr\b[^>]*/?>)\s*</p>#i', '$1', $html);
+		// <p><h2>…</h2> text</p> → <h2>…</h2><p>text</p> (hr/h2 imply </p> in HTML5)
+		$html = preg_replace(
+			'#<p>\s*(<(?:h[1-6]|ul|ol|table|blockquote)\b[^>]*>.*?</(?:h[1-6]|ul|ol|table|blockquote)>)\s*#is',
+			'$1<p>',
+			$html
+		);
 		$html = preg_replace(
 			'#<p>\s*(<(?:h[1-6]|ul|ol|table|blockquote)\b[^>]*>.*?</(?:h[1-6]|ul|ol|table|blockquote)>)\s*</p>#is',
 			'$1',
