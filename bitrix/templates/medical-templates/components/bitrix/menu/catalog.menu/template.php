@@ -2,9 +2,10 @@
 
 <?if (!empty($arResult)):?>
 <?php
+// Menu PARAMS[ID] is a string ("2943"); UF_DELETE_INDEX from iblock is int — normalize for strict match
 $ufDeleteIndex = [];
 if (isset($arResult['PROPERTIES']['UF_DELETE_INDEX']) && is_array($arResult['PROPERTIES']['UF_DELETE_INDEX'])) {
-	$ufDeleteIndex = $arResult['PROPERTIES']['UF_DELETE_INDEX'];
+	$ufDeleteIndex = array_map('intval', $arResult['PROPERTIES']['UF_DELETE_INDEX']);
 }
 ?>
 
@@ -22,6 +23,8 @@ foreach($arResult as $key => $arItem):
 	if (!is_array($arItem) || !isset($arItem['DEPTH_LEVEL'])) {
 		continue;
 	}
+	$menuItemId = isset($arItem['PARAMS']['ID']) ? (int)$arItem['PARAMS']['ID'] : 0;
+	$hideInJs = ($menuItemId > 0 && in_array($menuItemId, $ufDeleteIndex, true));
 ?>
 	<?if ($previousLevel && $arItem["DEPTH_LEVEL"] < $previousLevel):?>
 		<?=str_repeat("</ul></li>", ($previousLevel - $arItem["DEPTH_LEVEL"]));?>
@@ -30,8 +33,8 @@ foreach($arResult as $key => $arItem):
 	<?if ($arItem["IS_PARENT"]):?>
 			<li<?if($arItem["CHILD_SELECTED"] !== true):?> <?endif?> class="catalog__item">
 
-                <? if(in_array($arItem["PARAMS"]["ID"], $ufDeleteIndex, true)): ?>
-                    <a href="<?=$arItem["LINK"]?>" class="catalog__link" data-text="<?=$arItem["TEXT"]?>"></a>
+                <? if($hideInJs): ?>
+                    <a href="<?=$arItem["LINK"]?>" class="catalog__link" data-text="<?=htmlspecialcharsbx($arItem["TEXT"])?>"></a>
                 <? else: ?>
                     <a href="<?=$arItem["LINK"]?>" class="catalog__link"><?=$arItem["TEXT"]?></a>
                 <? endif; ?>
@@ -42,8 +45,8 @@ foreach($arResult as $key => $arItem):
 
 		<?if ($arItem["PERMISSION"] > "D"):?>
 				<li <?if($arItem["DEPTH_LEVEL"] == 1):?>class="catalog__item"<?endif;?>>
-                    <? if(in_array($arItem["PARAMS"]["ID"], $ufDeleteIndex, true)): ?>
-                        <a href="<?=$arItem["LINK"]?>" class="<?if($arItem["DEPTH_LEVEL"] > 1):?>catalog__submenu_link<?else:?>catalog__link<?endif;?>" data-text="<?=$arItem["TEXT"]?>"></a>
+                    <? if($hideInJs): ?>
+                        <a href="<?=$arItem["LINK"]?>" class="<?if($arItem["DEPTH_LEVEL"] > 1):?>catalog__submenu_link<?else:?>catalog__link<?endif;?>" data-text="<?=htmlspecialcharsbx($arItem["TEXT"])?>"></a>
                     <? else: ?>
                         <a href="<?=$arItem["LINK"]?>" class="<?if($arItem["DEPTH_LEVEL"] > 1):?>catalog__submenu_link<?else:?>catalog__link<?endif;?>"><?=$arItem["TEXT"]?></a>
                     <? endif; ?>
