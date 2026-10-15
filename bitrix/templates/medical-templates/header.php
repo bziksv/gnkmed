@@ -14,10 +14,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:image" content="path/to/image.jpg">
+    <link rel="icon" type="image/svg+xml" href="<?=SITE_TEMPLATE_PATH?>/img/favicon/favicon.svg">
+    <link rel="icon" type="image/png" sizes="120x120" href="<?=SITE_TEMPLATE_PATH?>/img/favicon/favicon-120x120.png">
     <link rel="shortcut icon" href="<?=SITE_TEMPLATE_PATH?>/img/favicon/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="<?=SITE_TEMPLATE_PATH?>/img/favicon/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="72x72" href="<?=SITE_TEMPLATE_PATH?>/img/favicon/apple-touch-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="114x114" href="<?=SITE_TEMPLATE_PATH?>/img/favicon/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="<?=SITE_TEMPLATE_PATH?>/img/favicon/favicon-120x120.png">
 
     <link rel="stylesheet" href="<?=SITE_TEMPLATE_PATH?>/vendor/fonts/site-fonts.css">
     <link rel="stylesheet" href="<?=SITE_TEMPLATE_PATH?>/vendor/jquery-ui/1.12.1/themes/base/jquery-ui.min.css">
