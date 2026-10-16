@@ -11,12 +11,15 @@ if(!defined("B_PROLOG_INCLUDED")||B_PROLOG_INCLUDED!==true)die();
  */
 
 $item = $arResult['ITEM'];
+$articls = $item['PROPERTIES']['ARTICLS']['VALUE'] ?? [];
+if (!is_array($articls) || count($articls) < 2) {
+	return;
+}
 ?>
 
-<? if(count($item['PROPERTIES']['ARTICLS']['VALUE']) > 1): ?>
-    
+<div class="more_options" id="more_option_<?=(int)$item['ID']?>">
 		<span class="button b-close"><span>&times;</span></span>
-		
+
         <div class="more_potions-p-head">
             Дополнительные параметры товара
         </div>
@@ -76,4 +79,4 @@ $item = $arResult['ITEM'];
 				a > 1 && i.val(--a)
 			});
 		</script>
-<?endif;?>
+</div>
