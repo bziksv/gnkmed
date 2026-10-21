@@ -1,5 +1,26 @@
 "use strict";
 $(function() {
+    function refreshLightSliders(selector) {
+        $(selector).each(function() {
+            var slider = $(this).data("lightSlider");
+            if (slider && typeof slider.refresh === "function") {
+                slider.refresh();
+            }
+        });
+    }
+
+    function debounce(fn, wait) {
+        var timer;
+        return function() {
+            var context = this,
+                args = arguments;
+            clearTimeout(timer);
+            timer = setTimeout(function() {
+                fn.apply(context, args);
+            }, wait);
+        };
+    }
+
     $(".slider__wrapper").lightSlider({
         adaptiveHeight: !1,
         item: 1,
@@ -17,7 +38,14 @@ $(function() {
         pager: !1,
         enableDrag: !1,
         prevHtml: '<i class="icon-arrow_prev"></i>',
-        nextHtml: '<i class="icon-arrow_next"></i>'
+        nextHtml: '<i class="icon-arrow_next"></i>',
+        responsive: [{
+            breakpoint: 768,
+            settings: {
+                item: 1,
+                slideMargin: 0
+            }
+        }]
     }), $(".goods__slider").lightSlider({
         adaptiveHeight: !1,
         item: 4,
@@ -97,4 +125,15 @@ $(function() {
         let self = $(el);
         self.html(self.data('text'));
     });
+
+    // Recalculate product/full sliders after layout settles (fixes empty slides on ~320px)
+    var refreshHomeSliders = function() {
+        refreshLightSliders(".goods__slider, .full-slider__wrapper");
+    };
+    $(window).on("load", function() {
+        refreshHomeSliders();
+        setTimeout(refreshHomeSliders, 100);
+    });
+    $(window).on("resize orientationchange", debounce(refreshHomeSliders, 200));
+    setTimeout(refreshHomeSliders, 0);
 });

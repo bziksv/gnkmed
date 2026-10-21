@@ -84,8 +84,8 @@
                 <!--<a href="/upload/politics.pdf" target="_blank" class="footer__link">Политика конфиденциальности.</a>
                 <a href="/upload/compliance.pdf" target="_blank" class="footer__link">Согласие на обработку персональных данных.</a>-->
 				<br>
-                <a href="https://prime-ltd.su/" target="_blank" style="position: relative; right: 11px;">
-  					<img src="https://prime-ltd.su/logo/white.svg" style="width: 70%; height: auto;" title="Продвижение сайтов" alt="Продвижение сайтов">
+                <a href="https://prime-ltd.su/" target="_blank" class="footer__prime" rel="noopener">
+  					<img src="https://prime-ltd.su/logo/white.svg" class="footer__prime-logo" title="Продвижение сайтов" alt="Продвижение сайтов">
 				</a>
             </div>
         </div>

@@ -79,8 +79,6 @@ $APPLICATION->SetTitle("gnkmed.ru - поставки медицинской те
                 );?>
             </div>
             <div class="main overflow-hidden">
-                <div class="title">Категории</div>
-
                 <?
                 $arHomeSection = array();
                 $arFilter = array('IBLOCK_ID' => IBLOCK_CATALOG, 'ACTIVE' => 'Y', 'UF_SHOW_HOME' => true);
@@ -95,21 +93,22 @@ $APPLICATION->SetTitle("gnkmed.ru - поставки медицинской те
                     $arHomeSectionFour = array_slice($arHomeSection,0,4,true);
                 }
                 ?>
+                <? if(!empty($arHomeSectionFour)): ?>
+                <div class="title">Категории</div>
                 <div class="categories">
-                    <? if(isset($arHomeSectionFour)): ?>
-                        <?
-                        foreach($arHomeSectionFour as $del => $section):
-                        unset($arHomeSection[$del]);
-                            ?>
-                            <a href="<?=$section['SECTION_PAGE_URL']?>" class="categories__item">
-                            <span class="categories__item_wrapper">
-                                <span class="categories__img"><img src="<?=$section['PICTURE']?>" alt="categories"></span>
-                                <span class="categories__title"><?=$section['NAME']?></span>
-                            </span>
-                            </a>
-                        <?endforeach;?>
-                    <? endif; ?>
+                    <?
+                    foreach($arHomeSectionFour as $del => $section):
+                    unset($arHomeSection[$del]);
+                        ?>
+                        <a href="<?=$section['SECTION_PAGE_URL']?>" class="categories__item">
+                        <span class="categories__item_wrapper">
+                            <span class="categories__img"><img src="<?=$section['PICTURE']?>" alt="categories"></span>
+                            <span class="categories__title"><?=$section['NAME']?></span>
+                        </span>
+                        </a>
+                    <?endforeach;?>
                 </div>
+                <? endif; ?>
 
                 <div class="full-slider">
 
