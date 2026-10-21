@@ -2,7 +2,7 @@
 set -e
 cd "$(dirname "$0")/.."
 SITE_ROOT="$(pwd)"
-PHP83=/opt/homebrew/opt/php@8.3
+PHP82=/opt/homebrew/opt/php@8.2
 NGINX=/opt/homebrew/bin/nginx
 RUN_DIR="$SITE_ROOT/.local/run"
 
@@ -48,7 +48,12 @@ cp "$SITE_ROOT/.local/php/php.ini" "$RUN_DIR/php.ini"
 
 export PHPRC="$RUN_DIR/php.ini"
 
-"$PHP83/sbin/php-fpm" -y "$RUN_DIR/fpm.conf" &
+if [ ! -x "$PHP82/sbin/php-fpm" ]; then
+  echo "php@8.2 not found. Install: brew install php@8.2"
+  exit 1
+fi
+
+"$PHP82/sbin/php-fpm" -y "$RUN_DIR/fpm.conf" &
 FPM_PID=$!
 sleep 1
 
@@ -61,8 +66,9 @@ fi
 sleep 1
 
 HTTP=$(curl -sS -o /tmp/gnkmed-check.html -w '%{http_code}' --max-time 60 http://127.0.0.1:8095/ || echo 000)
+PHP_VER=$("$PHP82/bin/php" -r 'echo PHP_VERSION;')
 
-echo "soft http://127.0.0.1:8095/ → HTTP $HTTP"
+echo "soft http://127.0.0.1:8095/ → HTTP $HTTP (PHP $PHP_VER)"
 echo "php-fpm :9095 (ondemand, max 4 workers, 512M)"
 echo "stop: ./scripts/stop-dev.sh"
 
