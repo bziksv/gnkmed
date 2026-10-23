@@ -19,15 +19,17 @@ function gnkmedLegalThirdPartyServices(): array
             'urls' => [
                 ['href' => 'https://mc.yandex.ru/', 'text' => 'https://mc.yandex.ru/'],
                 ['href' => 'https://api-maps.yandex.ru/', 'text' => 'https://api-maps.yandex.ru/'],
+                ['href' => 'https://yastatic.net/', 'text' => 'https://yastatic.net/'],
             ],
-            'purpose' => 'Яндекс.Метрика — сбор и анализ статистики посещений, действий пользователей и достижения целей; Яндекс.Карты — отображение пунктов выдачи и доставки при оформлении заказа',
-            'processor_note' => 'Яндекс.Метрика, Яндекс.Карты',
+            'purpose' => 'Яндекс.Метрика — сбор и анализ статистики посещений, действий пользователей и достижения целей; Яндекс.Карты — отображение пунктов выдачи и доставки при оформлении заказа; yastatic.net — служебный CDN скриптов и ресурсов Яндекса (в т.ч. в личном кабинете и при оформлении заказа)',
+            'processor_note' => 'Яндекс.Метрика, Яндекс.Карты, CDN yastatic.net',
         ],
         [
             'label' => 'сервис Roistat',
             'operator' => 'ООО «Бизнес-аналитика» (Roistat)',
             'urls' => [
                 ['href' => 'https://cloud.roistat.com/', 'text' => 'https://cloud.roistat.com/'],
+                ['href' => 'https://cllctr.roistat.com/', 'text' => 'https://cllctr.roistat.com/'],
                 ['href' => 'https://roistat.com/', 'text' => 'https://roistat.com/'],
             ],
             'purpose' => 'используется для сквозной аналитики, отслеживания обращений и источников трафика',
