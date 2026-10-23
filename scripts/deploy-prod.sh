@@ -40,9 +40,10 @@ ssh "$HOST" "set -e
   fi
 
   cd \"\$DEPLOY_GIT\"
-  GIT_TERMINAL_PROMPT=0 git fetch \"\$REMOTE\" \"\$BRANCH\"
+  # Update local main ref (FETCH_HEAD alone is unreliable on bare repos)
+  GIT_TERMINAL_PROMPT=0 git fetch \"\$REMOTE\" \"+\${BRANCH}:\${BRANCH}\"
   # Update tracked files only; leave secrets/upload/untracked alone
-  GIT_TERMINAL_PROMPT=0 git --work-tree=\"\$PROD_PATH\" checkout -f FETCH_HEAD -- .
+  GIT_TERMINAL_PROMPT=0 git --work-tree=\"\$PROD_PATH\" checkout -f \"\$BRANCH\" -- .
   git gc --prune=now --quiet 2>/dev/null || true
 
   if [ ! -f \"\$PROD_PATH/bitrix/license_key.php\" ] && [ -f /tmp/gnkmed_license_key.php.bak ]; then
@@ -52,7 +53,7 @@ ssh "$HOST" "set -e
 
   chown -R \"\${PROD_USER}:\${PROD_USER}\" \"\$PROD_PATH\" \"\$DEPLOY_GIT\"
   rm -rf \"\$PROD_PATH/bitrix/cache/\"* \"\$PROD_PATH/bitrix/managed_cache/\"* \"\$PROD_PATH/bitrix/stack_cache/\"* 2>/dev/null || true
-  git --git-dir=\"\$DEPLOY_GIT\" log -1 --oneline FETCH_HEAD
+  git --git-dir=\"\$DEPLOY_GIT\" log -1 --oneline \"\$BRANCH\"
   echo cache_cleared
 "
 
