@@ -94,7 +94,10 @@ Soft-режим: php-fpm `ondemand`, max 4 workers, **512M** RAM.
 **Git после правок — всегда.** **Prod — только по явной просьбе.**
 
 1. Обычно: `git commit` + `git push origin main`.
-2. Когда попросили выкатить: `./scripts/deploy-prod.sh` (pull с GitHub на prod).
+2. Когда попросили выкатить: `./scripts/deploy-prod.sh` (fetch → checkout в docroot).
+
+Репозиторий на сервере: **`/var/www/gnkmed.ru/data/deploy/gnkmed.git`** (bare, вне web-root).  
+В docroot **нет** `.git` (иначе паки от каждого fetch раздувают диск и `.git` светится в интернет).
 
 ```bash
 cd gnkmed.ru
@@ -104,7 +107,7 @@ git add … && git commit -m "…" && git push origin main
 ./scripts/deploy-prod.sh
 ```
 
-**Запрещено:** автодеплой на prod, правки на prod без commit, `scp` файлов кода.
+**Запрещено:** автодеплой на prod, правки на prod без commit, `scp` файлов кода, хранить `.git` в `www/gnkmed.ru`.
 
 ## Интеграции
 
