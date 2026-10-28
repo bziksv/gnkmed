@@ -121,9 +121,10 @@ function gnkmedDisableCompositeForForms()
 
 function gnkmedDisableCaptcha()
 {
-	if (COption::GetOptionString("main", "captcha_registration", "N") !== "N")
+	// Registration form must show digit CAPTCHA (template renders when option is Y).
+	if (COption::GetOptionString("main", "captcha_registration", "N") !== "Y")
 	{
-		COption::SetOptionString("main", "captcha_registration", "N");
+		COption::SetOptionString("main", "captcha_registration", "Y");
 	}
 	if (COption::GetOptionString("main", "captcha_restoring_password", "N") !== "N")
 	{
